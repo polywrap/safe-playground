@@ -1,10 +1,12 @@
-import { getClient, SAFE_MANAGER_URI } from "../helpers/client-config";
+import { ETHEREUM_WRAPPER_URI, getClient, SAFE_MANAGER_URI } from "../helpers/client-config";
 import { config } from "dotenv";
+// import { Wallet } from "ethers";
 config();
 
 const connection = {
   networkNameOrChainId: "goerli",
 };
+const SAFE_ADDRESS = "0x5655294c49e7196c21f20551330c2204db2bd670"
 
 const main = async () => {
   if (!process.env.PRIVATE_KEY) {
@@ -21,48 +23,35 @@ const main = async () => {
 
   const client = getClient();
 
-  const ethereumWrapperUri = "ens/wraps.eth:ethereum@1.1.0";
+  // Get signer address
   const signerAddress = await client.invoke({
-    uri: ethereumWrapperUri,
+    uri: ETHEREUM_WRAPPER_URI,
     method: "getSignerAddress",
     args: {
       connection,
-    },
+    }
   });
 
   if (!signerAddress.ok) throw signerAddress.error;
-  const valueToTransfer = "5000000000000000"; // 0.005 ETH
+  console.log(`Signer address: ${signerAddress.value}`)
 
-  // @TODO: check if safe exists, if not, deploy, then add it to env
-  const safeAddress = "0x1bb36e33c17950c1ebe1b17ed7701fc4fe44d9c5";
-
-  // @TODO: Check balance & transfer money to safe if necessary
-  // Note: This should be modified eventually w/filling the relayer
-  const transfer = await client.invoke({
-    uri: ethereumWrapperUri,
-    method: "sendTransactionAndwait",
+  const encodeTransaction = await client.invoke({
+    uri: ETHEREUM_WRAPPER_URI,
+    method: "encodeFunction",
     args: {
-      tx: {
-        to: safeAddress,
-        value: valueToTransfer,
-      },
-    },
-  });
-  if (!transfer.ok) throw transfer.error;
+      method: "function store(uint256 num) public",
+      args: ["99"]
+    }
+  })
+  if (!encodeTransaction.ok) throw encodeTransaction.error;
+  console.log("Transaction encoded")
 
   // Transaction to be send
-  // @TODO: Create complex transactions 
+  // @TODO: Create complex transactions
   const txToExecute = {
-    data: "0x",
-    to: signerAddress.value,
-    value: valueToTransfer,
-    operation: "0",
-    safeTxGas: "0",
-    baseGas: "0",
-    gasPrice: "0",
-    gasToken: "0x0000000000000000000000000000000000000000",
-    refundReceiver: "0x0000000000000000000000000000000000000000",
-    nonce: "0",
+    data: encodeTransaction.value,
+    to: "0x56535d1162011e54aa2f6b003d02db171c17e41e",
+    value: "0x"
   };
 
   const createTransaction = await client.invoke({
@@ -71,32 +60,45 @@ const main = async () => {
     args: {
       tx: txToExecute,
     },
+    env: {
+      safeAddress: SAFE_ADDRESS,
+      connection
+    }
   });
+  console.log("Transaction created!")
 
   if (!createTransaction.ok) throw createTransaction.error;
-
-  // @TODO: In this example, the safe has only one owner
-  // this needs to be showed with multiple signers
   const transaction = createTransaction.value;
-  const signedTxInvoke = await client.invoke({
+
+  const signedTx = await client.invoke({
     uri: SAFE_MANAGER_URI,
     method: "addSignature",
     args: {
       tx: transaction,
     },
+    env: {
+      safeAddress: SAFE_ADDRESS,
+      connection
+    }
   });
-  if (!signedTxInvoke.ok) throw signedTxInvoke.error;
+  if (!signedTx.ok) throw signedTx.error;
 
-  const signedTx = signedTxInvoke.value;
   const executeTransaction = await client.invoke({
     uri: SAFE_MANAGER_URI,
     method: "executeTransaction",
     args: {
-      tx: signedTx,
+      tx: signedTx.value
     },
+    env: {
+      safeAddress: SAFE_ADDRESS,
+      connection
+    }
   });
+  if (!executeTransaction.ok) throw executeTransaction.error;
 
-  console.log(executeTransaction);
+  console.log("Transaction executed!");
+  //@ts-ignore
+  console.log(`https://goerli.etherscan.io/tx/${executeTransaction.value.transactionHash}`)
 };
 
 main().then();

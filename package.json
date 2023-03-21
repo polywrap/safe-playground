@@ -3,10 +3,14 @@
   "version": "1.0.0",
   "description": "Gnosis safe wrapper playground",
   "scripts": {
-    "create-and-execute": "ts-node ./scripts/create-and-execute-transaction.ts"
+    "create-and-execute": "ts-node ./scripts/create-and-execute-transaction.ts",
+    "deploy": "ts-node ./scripts/deploy-safe.ts",
+    "get-owners": "ts-node ./scripts/owners/get",
+    "add-owner": "ts-node ./scripts/owners/add",
+    "remove-owner": "ts-node ./scripts/owners/remove"
   },
   "devDependencies": {
-    "@cbrazon/ethereum-provider-js": "0.2.6",
+    "@polywrap/ethereum-provider-js": "0.3.0",
     "@polywrap/datetime-plugin-js": "1.0.0-pre.1",
     "dotenv": "^16.0.3",
     "ethers": "5.7.2",
