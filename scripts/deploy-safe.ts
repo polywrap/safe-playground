@@ -1,28 +1,9 @@
-import {
-  ETHEREUM_WRAPPER_URI,
-  getClient,
-  SAFE_FACTORY_URI,
-} from "../helpers/client-config";
-import { config } from "dotenv";
-config();
+import { getClient } from "../helpers/client-config";
+import { CONNECTION, ETHEREUM_WRAPPER_URI, SAFE_FACTORY_URI } from "../helpers/constants";
 
-const connection = {
-  networkNameOrChainId: "goerli",
-};
+const SALT_NONCE = "0x19938"
 
 const main = async () => {
-  if (!process.env.PRIVATE_KEY) {
-    throw new Error(
-      "You must define a private key in the .env file. See .example.env"
-    );
-  }
-
-  if (!process.env.RPC_URL) {
-    throw new Error(
-      "You must define a RPC URL in the .env file. See .example.env"
-    );
-  }
-
   const client = getClient();
 
   // Get signed address
@@ -30,7 +11,7 @@ const main = async () => {
     uri: ETHEREUM_WRAPPER_URI,
     method: "getSignerAddress",
     args: {
-      connection,
+      connection: CONNECTION,
     },
   });
 
@@ -44,9 +25,9 @@ const main = async () => {
         threshold: 1,
       },
       safeDeploymentConfig: {
-        saltNonce: "0x999999",
+        saltNonce: SALT_NONCE,
       },
-      connection,
+      connection: CONNECTION,
     },
   };
   const expectedSafeAddress = await client.invoke({
@@ -64,7 +45,8 @@ const main = async () => {
   });
   if (!deploySafe.ok) throw deploySafe.error;
 
-  console.log(deploySafe);
+
+  console.log(`Safe deployed to address: ${deploySafe.value}`);
 };
 
 main().then();

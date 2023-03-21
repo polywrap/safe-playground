@@ -1,14 +1,30 @@
-// const [accountTwo, accountThree] = [
-//   {
-//     signer: new Wallet(
-//       "0x6cbed15c793ce57650b9877cf6fa156fbef513c4e6134f022a85b1ffdd59b2a1"
-//     ),
-//     address: "0xFFcf8FDEE72ac11b5c542428B35EEF5769C409f0",
-//   },
-//   {
-//     signer: new Wallet(
-//       "0x6370fd033278c143179d81c5526140625662b8daa446c22ee2d73db3707e620c"
-//     ),
-//     address: "0x22d491Bde2303f2f43325b2108D26f1eAbA1e32b",
-//   },
-// ];
+import { PolywrapClient } from "@polywrap/client-js"
+import { BigNumber } from "ethers"
+import { CONNECTION, ETHEREUM_WRAPPER_URI } from "./constants"
+
+const EXPECTED_ETH = "50000000000000000" // 0.005
+
+export const checkSenderBalance = async (client: PolywrapClient) => {
+    const address = await client.invoke({
+        uri: ETHEREUM_WRAPPER_URI,
+        method: "getSignerAddress",
+        args: {
+            connection: CONNECTION
+        }
+    })
+    if (!address.ok) throw address.error
+
+    const balance = await client.invoke({
+        uri: ETHEREUM_WRAPPER_URI,
+        method: "getBalance",
+        args: {
+            address: address.value
+        }
+    })
+    if (!balance.ok) throw balance.error
+
+    if (BigNumber.from(balance.value).lt(EXPECTED_ETH)) {
+        console.warn("Signer address has low balance. Transaction is most likely to fail")
+    }
+
+}

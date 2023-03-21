@@ -2,7 +2,6 @@ import {
   PolywrapClient,
   ClientConfigBuilder,
   IWrapPackage,
-  Uri,
 } from "@polywrap/client-js";
 import {
   Connections,
@@ -11,25 +10,24 @@ import {
 } from "@polywrap/ethereum-provider-js";
 import { dateTimePlugin } from "@polywrap/datetime-plugin-js";
 import { Wallet } from "ethers";
+import {
+  OWNER_ONE_PRIVATE_KEY,
+  SAFE_ADDRESS,
+  SAFE_MANAGER_URI,
+} from "./constants";
 
-export const SAFE_CONTRACTS_URI = Uri.from(
-  "wrap://ens/safe.wraps.eth:contracts@0.1.0"
-);
-export const SAFE_FACTORY_URI = Uri.from(
-  "wrap://ens/safe.wraps.eth:factory@0.1.0"
-);
-export const SAFE_MANAGER_URI = Uri.from(
-  "wrap://ens/safe.wraps.eth:manager@0.1.0"
-);
-
-export const ETHEREUM_WRAPPER_URI = Uri.from(
-  "ens/wraps.eth:ethereum@2.0.0"
-)
+const connection = {
+  networkNameOrChainId: "goerli",
+};
 
 export const getClient = (
-  signer = new Wallet(process.env.OWNER_ONE_PRIVATE_KEY as string)
+  privateKey = OWNER_ONE_PRIVATE_KEY
 ) => {
+  const signer = new Wallet(privateKey)
   const builder = new ClientConfigBuilder();
+
+  const provider = process.env.RPC_URL || connection.networkNameOrChainId
+
   builder
     .addDefaults()
     .addPackages({
@@ -37,7 +35,7 @@ export const getClient = (
         connections: new Connections({
           networks: {
             goerli: new Connection({
-              provider: process.env.RPC_URL as string,
+              provider,
               signer,
             }),
           },
@@ -47,9 +45,8 @@ export const getClient = (
       "wrap://ens/datetime.polywrap.eth": dateTimePlugin({}) as IWrapPackage,
     })
     .addEnv(SAFE_MANAGER_URI.uri, {
-      connection: {
-        networkNameOrChainId: "goerli"
-      }
+      safeAddress: SAFE_ADDRESS,
+      connection,
     })
     .addInterfaceImplementation(
       "wrap://ens/wraps.eth:ethereum-provider@2.0.0",
