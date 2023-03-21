@@ -7,13 +7,6 @@ const connection = {
   networkNameOrChainId: "goerli",
 };
 
-const mockOwner = {
-  signer: new Wallet(
-    "0x4f3edf983ac636a65a842ce7c78d9aa706d3b113bce9c46f30d7d21715b23b1d"
-  ),
-  address: "0x90F8bf6A479f320ead074411a4B0e7944Ea8c9C1",
-};
-
 const SAFE_ADDRESS = "0x5655294c49e7196c21f20551330c2204db2bd670";
 
 const main = async () => {
@@ -23,6 +16,20 @@ const main = async () => {
     );
   }
 
+  if (!process.env.OWNER_ONE_PRIVATE_KEY) {
+    throw new Error(
+      "You must define a owner one private key in the .env file. See .example.env"
+    );
+  }
+  if (!process.env.OWNER_TWO_PRIVATE_KEY) {
+    throw new Error(
+      "You must define a owner two private key in the .env file. See .example.env"
+    );
+  }
+  const mockOwner = {
+    signer: new Wallet(process.env.OWNER_TWO_PRIVATE_KEY as string),
+    address: "0x0Ce3cC862b26FC643aA8A73D2D30d47EF791941e",
+  };
   const client = getClient();
 
   const owners = await client.invoke({
@@ -43,17 +50,17 @@ const main = async () => {
       ownerAddress: mockOwner.address,
     },
     env: {
-        safeAddress: SAFE_ADDRESS,
-        connection
-    }
+      safeAddress: SAFE_ADDRESS,
+      connection,
+    },
   });
   if (!addOwnerEncoded.ok) throw addOwnerEncoded.error;
 
   const addOwnerTransaction = {
     to: SAFE_ADDRESS,
     data: addOwnerEncoded.value,
-    value: "0"
-  }
+    value: "0",
+  };
 
   const transaction = await client.invoke({
     uri: SAFE_MANAGER_URI,
@@ -62,41 +69,42 @@ const main = async () => {
       tx: addOwnerTransaction,
     },
     env: {
-        safeAddress: SAFE_ADDRESS,
-        connection
-    }
+      safeAddress: SAFE_ADDRESS,
+      connection,
+    },
   });
   if (!transaction.ok) throw transaction.error;
-  console.log("Transaction created!")
+  console.log("Transaction created!");
 
   const signedTransaction = await client.invoke({
     uri: SAFE_MANAGER_URI,
     method: "addSignature",
     args: {
-        tx: transaction.value
+      tx: transaction.value,
+      signingMethod: "eth_signTypedData",
     },
     env: {
-        safeAddress: SAFE_ADDRESS,
-        connection
-    }
-  })
+      safeAddress: SAFE_ADDRESS,
+      connection,
+    },
+  });
   if (!signedTransaction.ok) throw signedTransaction.error;
-  console.log("Signature added!")
+  console.log("Signature added!");
 
   const executeTransaction = await client.invoke({
     uri: SAFE_MANAGER_URI,
     method: "executeTransaction",
     args: {
-        tx: signedTransaction.value
+      tx: signedTransaction.value,
     },
     env: {
-        safeAddress: SAFE_ADDRESS,
-        connection
-    }
-  })
+      safeAddress: SAFE_ADDRESS,
+      connection,
+    },
+  });
   if (!executeTransaction.ok) throw executeTransaction.error;
-  console.log("Transaction executed!")
-  console.log(`Owner with address ${mockOwner.address} has been added`)
+  console.log("Transaction executed!");
+  console.log(`Owner with address ${mockOwner.address} has been added`);
 };
 
 main().then();

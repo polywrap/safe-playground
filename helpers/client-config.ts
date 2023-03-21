@@ -27,7 +27,7 @@ export const ETHEREUM_WRAPPER_URI = Uri.from(
 )
 
 export const getClient = (
-  signer = new Wallet(process.env.PRIVATE_KEY as string)
+  signer = new Wallet(process.env.OWNER_ONE_PRIVATE_KEY as string)
 ) => {
   const builder = new ClientConfigBuilder();
   builder

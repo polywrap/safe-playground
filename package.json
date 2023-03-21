@@ -4,6 +4,8 @@
   "description": "Gnosis safe wrapper playground",
   "scripts": {
     "create-and-execute": "ts-node ./scripts/create-and-execute-transaction.ts",
+    "execute-with-multiple-owners": "ts-node ./scripts/execute-with-multiple-owners.ts",
+    "execute-multisend": "ts-node ./scripts/execute-multisend.ts",
     "deploy": "ts-node ./scripts/deploy-safe.ts",
     "get-owners": "ts-node ./scripts/owners/get",
     "add-owner": "ts-node ./scripts/owners/add",
