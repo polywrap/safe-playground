@@ -30,6 +30,7 @@ const main = async () => {
       connection: CONNECTION,
     },
   };
+
   const expectedSafeAddress = await client.invoke({
     uri: SAFE_FACTORY_URI,
     method: "predictSafeAddress",
@@ -37,6 +38,22 @@ const main = async () => {
   });
   if (!expectedSafeAddress.ok) throw expectedSafeAddress.error;
   console.log(`Expected safe address: ${expectedSafeAddress.value}`);
+
+  const safeIsDeployed = await client.invoke({
+    uri: SAFE_FACTORY_URI,
+    method: "safeIsDeployed",
+    args: {
+      safeAddress: expectedSafeAddress.value,
+      connection: CONNECTION
+    }
+  })
+
+  if (!safeIsDeployed.ok) throw safeIsDeployed.error;
+
+  if (safeIsDeployed.value) {
+    console.log("Safe is already deployed! If you would like to deploy a new one change the salt")
+    return
+  }
 
   const deploySafe = await client.invoke({
     uri: SAFE_FACTORY_URI,

@@ -3,8 +3,7 @@
   "version": "1.0.0",
   "description": "Gnosis safe wrapper playground",
   "scripts": {
-    "create-and-execute": "ts-node ./scripts/create-and-execute-transaction.ts",
-    "execute-with-multiple-owners": "ts-node ./scripts/execute-with-multiple-owners.ts",
+    "execute": "ts-node ./scripts/execute-transaction.ts",
     "execute-multisend": "ts-node ./scripts/execute-multisend.ts",
     "deploy": "ts-node ./scripts/deploy-safe.ts",
     "get-owners": "ts-node ./scripts/owners/get",
@@ -16,7 +15,7 @@
     "@polywrap/datetime-plugin-js": "1.0.0-pre.1",
     "dotenv": "^16.0.3",
     "ethers": "5.7.2",
-    "polywrap": "0.10.0-pre.11",
+    "polywrap": "0.10.0-pre.12",
     "ts-node": "10.9.1",
     "typescript": "4.9.5"
   }
