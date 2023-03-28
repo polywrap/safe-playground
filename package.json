@@ -5,6 +5,7 @@
   "scripts": {
     "execute": "ts-node ./scripts/execute-transaction.ts",
     "execute-multisend": "ts-node ./scripts/execute-multisend.ts",
+    "execute-sponsored": "ts-node ./scripts/execute-sponsored-transaction.ts",
     "deploy": "ts-node ./scripts/deploy-safe.ts",
     "get-owners": "ts-node ./scripts/owners/get",
     "add-owner": "ts-node ./scripts/owners/add",
