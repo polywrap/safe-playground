@@ -21,12 +21,13 @@ const connection = {
 };
 
 export const getClient = (
-  privateKey = OWNER_ONE_PRIVATE_KEY
+  privateKey = OWNER_ONE_PRIVATE_KEY,
+  builderConfigFn?: (builder: ClientConfigBuilder) => void
 ) => {
-  const signer = new Wallet(privateKey)
+  const signer = new Wallet(privateKey);
   const builder = new ClientConfigBuilder();
 
-  const provider = process.env.RPC_URL || connection.networkNameOrChainId
+  const provider = process.env.RPC_URL || connection.networkNameOrChainId;
 
   builder
     .addDefaults()
@@ -52,5 +53,10 @@ export const getClient = (
       "wrap://ens/wraps.eth:ethereum-provider@2.0.0",
       "wrap://ens/wraps.eth:ethereum-provider@2.0.0"
     );
+
+  if (builderConfigFn) {
+    builderConfigFn(builder);
+  }
+
   return new PolywrapClient(builder.build());
 };
