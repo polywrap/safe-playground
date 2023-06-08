@@ -4,7 +4,7 @@ extern crate serde;
 
 use polywrap_client::msgpack::serialize;
 use safe_rust_playground::{
-    constants::ETHERS_CORE_WRAPPER_URI, helpers::get_client, SAFE_FACTORY_URI, NETWORK,
+    constants::ETHERS_CORE_WRAPPER_URI, helpers::get_client, SAFE_FACTORY_URI,
 };
 use serde::{Deserialize, Serialize};
 
@@ -46,13 +46,14 @@ fn main() {
     let client = get_client(None);
     println!("Client received!");
     println!("Getting signer address...");
-    let signer_address: Result<String, polywrap_client::core::error::Error> = client.invoke::<String>(
-        &ETHERS_CORE_WRAPPER_URI.clone(),
-        "getSignerAddress",
-        None,
-        None,
-        None,
-    );
+    let signer_address: Result<String, polywrap_client::core::error::Error> = client
+        .invoke::<String>(
+            &ETHERS_CORE_WRAPPER_URI.clone(),
+            "getSignerAddress",
+            None,
+            None,
+            None,
+        );
 
     if signer_address.is_err() {
         panic!("Error fetching signer address")
@@ -67,9 +68,9 @@ fn main() {
                 threshold: 1,
             },
             safe_deployment_config: DeploymentConfig {
-                salt_nonce: "0x23423".to_string(),
+                salt_nonce: "0x888444777".to_string(),
             },
-            connection: None
+            connection: None,
         },
     };
 
@@ -103,5 +104,5 @@ fn main() {
             deploy_safe.unwrap_err().to_string()
         )
     }
-    println!("Safe deployed with hash: {}", deploy_safe.unwrap());
+    println!("Safe deployed in address: {}", deploy_safe.unwrap());
 }
