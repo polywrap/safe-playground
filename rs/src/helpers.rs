@@ -45,7 +45,9 @@ pub fn get_client(private_key: Option<String>) -> PolywrapClient {
         OWNER_ONE_PRIVATE_KEY.clone()
     };
 
-    let url = env::var("RPC_URL").unwrap_or_else(|_| NETWORK.to_string());
+    let url = env::var("RPC_URL").unwrap_or_else(|_| {
+        "https://goerli.infura.io/v3/41fbecf847994df5a9652b1210effd8a".to_string()
+    });
     let connection = Connection::new(url, Some(signer)).unwrap();
     let connections = Connections::new(
         HashMap::from([(NETWORK.to_string(), connection)]),

@@ -4,15 +4,15 @@ extern crate serde;
 
 use polywrap_client::msgpack::serialize;
 use safe_rust_playground::{
-    constants::ETHERS_CORE_WRAPPER_URI, helpers::get_client, SAFE_FACTORY_URI,
+    constants::ETHERS_CORE_WRAPPER_URI, helpers::get_client, SAFE_FACTORY_URI, NETWORK,
 };
 use serde::{Deserialize, Serialize};
 
-#[derive(Serialize, Deserialize)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 struct Connection {
     #[serde(rename = "networkNameOrChainId")]
-    network_name_or_chain_id: Option<String>,
-    node: Option<String>,
+    pub network_name_or_chain_id: Option<String>,
+    pub node: Option<String>,
 }
 
 #[derive(Serialize, Deserialize)]
@@ -42,9 +42,11 @@ struct DeploymentArgs {
 }
 
 fn main() {
+    println!("Getting client");
     let client = get_client(None);
-
-    let signer_address = client.invoke::<String>(
+    println!("Client received!");
+    println!("Getting signer address...");
+    let signer_address: Result<String, polywrap_client::core::error::Error> = client.invoke::<String>(
         &ETHERS_CORE_WRAPPER_URI.clone(),
         "getSignerAddress",
         None,
@@ -67,10 +69,7 @@ fn main() {
             safe_deployment_config: DeploymentConfig {
                 salt_nonce: "0x23423".to_string(),
             },
-            connection: Some(Connection {
-                network_name_or_chain_id: Some("goerli".to_string()),
-                node: None,
-            }),
+            connection: None
         },
     };
 

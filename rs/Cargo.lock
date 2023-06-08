@@ -3082,7 +3082,9 @@ dependencies = [
 
 [[package]]
 name = "polywrap_ethereum_wallet_plugin"
-version = "0.0.1-beta.2"
+version = "0.0.1-beta.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "3e71bb4266f7d924c9befb9d3f60e6a1d10db99d6fb0c97a38cbebe0e752e216"
 dependencies = [
  "ethers",
  "lazy_static",
