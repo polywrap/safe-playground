@@ -21,12 +21,13 @@ use crate::{
         GELATO_RELAYER_WRAPPER_URI, NETWORK, RELAYER_ADAPTER_WRAPPER_URI, SAFE_CONTRACTS_URI,
         SAFE_FACTORY_URI, SAFE_MANAGER_URI,
     },
-    OWNER_ONE_PRIVATE_KEY,
+    OWNER_ONE_PRIVATE_KEY, SAFE_ADDRESS,
 };
 use polywrap_client::{
     builder::types::{ClientBuilder, ClientConfigHandler},
     client::PolywrapClient,
     core::uri::Uri,
+    msgpack::serialize,
     plugin::package::PluginPackage,
 };
 use polywrap_client_default_config::build;
@@ -34,6 +35,21 @@ use polywrap_datetime_plugin::DatetimePlugin;
 use polywrap_ethereum_wallet_plugin::{
     connection::Connection, connections::Connections, EthereumWalletPlugin,
 };
+use serde::{Deserialize, Serialize};
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+struct SchemaConnection {
+    #[serde(rename = "networkNameOrChainId")]
+    pub network_name_or_chain_id: Option<String>,
+    pub node: Option<String>,
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+struct Env {
+    #[serde(rename = "safeAddress")]
+    pub safe_address: String,
+    pub connection: SchemaConnection,
+}
 
 pub fn get_client(private_key: Option<String>) -> PolywrapClient {
     dotenv::from_path("../.env").ok();
@@ -101,6 +117,18 @@ pub fn get_client(private_key: Option<String>) -> PolywrapClient {
             Arc::new(gelato_relayer_wrapper()),
         ),
     ]);
+
+    builder.add_env(
+        SAFE_MANAGER_URI.clone(),
+        serialize(&Env {
+            connection: SchemaConnection {
+                network_name_or_chain_id: Some("goerli".to_string()),
+                node: None,
+            },
+            safe_address: SAFE_ADDRESS.clone(),
+        })
+        .unwrap(),
+    );
 
     PolywrapClient::new(builder.build())
 }

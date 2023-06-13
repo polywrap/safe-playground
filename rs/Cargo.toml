@@ -4,10 +4,10 @@ description = "Safe wrap playground"
 version = "0.0.1"
 
 [dependencies]
-polywrap_client = "0.1.6-beta.4"
-polywrap_ethereum_wallet_plugin = "0.0.1-beta.4"
-polywrap_client_default_config = "0.1.6-beta.4"
-polywrap_datetime_plugin = "0.0.1-beta.2"
+polywrap_client = "0.1.6-beta.5"
+polywrap_ethereum_wallet_plugin = "0.0.1-beta.5"
+polywrap_client_default_config = "0.1.6-beta.5"
+polywrap_datetime_plugin = "0.0.1-beta.3"
 
 lazy_static = "1.4"
 dotenv = "0.15"
