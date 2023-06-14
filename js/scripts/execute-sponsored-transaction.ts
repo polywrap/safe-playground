@@ -9,7 +9,7 @@ import {
   RELAYER_ADAPTER_WRAPPER_URI,
 } from "../helpers/constants";
 
-const saltNonce = "0x2588023872387282";
+const saltNonce = "0x252387282";
 
 const main = async () => {
   const client = getClient(OWNER_ONE_PRIVATE_KEY);

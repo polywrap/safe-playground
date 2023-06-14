@@ -18,9 +18,9 @@ lazy_static! {
     pub static ref SAFE_CONTRACTS_URI: Uri =
         Uri::try_from("wrap://ens/safe.wraps.eth:contracts@0.1.0").unwrap();
     pub static ref RELAYER_ADAPTER_WRAPPER_URI: Uri =
-        Uri::try_from("wrap://ens/account-abstraction.wraps.eth:relayer-adapter@0.0.1").unwrap();
+        Uri::try_from("wrap://ens/aa.wraps.eth:relayer-adapter@0.0.1").unwrap();
     pub static ref ACCOUNT_ABSTRACTION_WRAPPER_URI: Uri =
-        Uri::try_from("wrap://ens/wraps.eth:aa-core@0.1.0").unwrap();
+        Uri::try_from("wrap://ens/aa.wraps.eth:core@0.1.0").unwrap();
     pub static ref GELATO_RELAYER_WRAPPER_URI: Uri =
         Uri::try_from("wrap://ens/gelato.wraps.eth:relayer@0.0.1").unwrap();
     pub static ref NETWORK: String = String::from("goerli");

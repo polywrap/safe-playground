@@ -16,10 +16,10 @@ export const ETHERS_UTILS_WRAPPER_URI = Uri.from(
   "wrap://ens/ethers.wraps.eth:utils@0.1.1"
 );
 export const RELAYER_ADAPTER_WRAPPER_URI = Uri.from(
-  "wrap://ens/account-abstraction.wraps.eth:relayer-adapter@0.0.1"
+  "wrap://ens/aa.wraps.eth:relayer-adapter@0.0.1"
 );
 export const ACCOUNT_ABSTRACTION_WRAPPER_URI = Uri.from(
-  "wrap://ens/wraps.eth:aa-core@0.1.0"
+  "wrap://ens/aa.wraps.eth:core@0.1.0"
 );
 export const GELATO_RELAYER_WRAPPER_URI = Uri.from(
   "wrap://ens/gelato.wraps.eth:relayer@0.0.1"

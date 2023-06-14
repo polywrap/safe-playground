@@ -21,6 +21,7 @@ use crate::{
         GELATO_RELAYER_WRAPPER_URI, NETWORK, RELAYER_ADAPTER_WRAPPER_URI, SAFE_CONTRACTS_URI,
         SAFE_FACTORY_URI, SAFE_MANAGER_URI,
     },
+    AccountAbstractionEnv, RelayerAdapterEnv, SafeManagerEnv, SchemaConnection,
     OWNER_ONE_PRIVATE_KEY, SAFE_ADDRESS,
 };
 use polywrap_client::{
@@ -35,21 +36,6 @@ use polywrap_datetime_plugin::DatetimePlugin;
 use polywrap_ethereum_wallet_plugin::{
     connection::Connection, connections::Connections, EthereumWalletPlugin,
 };
-use serde::{Deserialize, Serialize};
-
-#[derive(Clone, Debug, Deserialize, Serialize)]
-struct SchemaConnection {
-    #[serde(rename = "networkNameOrChainId")]
-    pub network_name_or_chain_id: Option<String>,
-    pub node: Option<String>,
-}
-
-#[derive(Clone, Debug, Deserialize, Serialize)]
-struct Env {
-    #[serde(rename = "safeAddress")]
-    pub safe_address: String,
-    pub connection: SchemaConnection,
-}
 
 pub fn get_client(private_key: Option<String>) -> PolywrapClient {
     dotenv::from_path("../.env").ok();
@@ -118,17 +104,35 @@ pub fn get_client(private_key: Option<String>) -> PolywrapClient {
         ),
     ]);
 
-    builder.add_env(
-        SAFE_MANAGER_URI.clone(),
-        serialize(&Env {
-            connection: SchemaConnection {
-                network_name_or_chain_id: Some("goerli".to_string()),
-                node: None,
-            },
-            safe_address: SAFE_ADDRESS.clone(),
-        })
-        .unwrap(),
-    );
+    let schema_connection = SchemaConnection {
+        network_name_or_chain_id: Some("goerli".to_string()),
+        node: None,
+    };
+
+    builder.add_envs(HashMap::from([
+        (
+            SAFE_MANAGER_URI.clone().uri,
+            serialize(&SafeManagerEnv {
+                connection: schema_connection.clone(),
+                safe_address: SAFE_ADDRESS.clone(),
+            })
+            .unwrap(),
+        ),
+        (
+            RELAYER_ADAPTER_WRAPPER_URI.clone().uri,
+            serialize(&RelayerAdapterEnv {
+                relayer_api_key: "AiaCshYRyAUzTNfZZb8LftJaAl2SS3I8YwhJJXc5J7A_".to_string(),
+            })
+            .unwrap(),
+        ),
+        (
+            ACCOUNT_ABSTRACTION_WRAPPER_URI.clone().uri,
+            serialize(&AccountAbstractionEnv {
+                connection: schema_connection,
+            })
+            .unwrap(),
+        ),
+    ]));
 
     PolywrapClient::new(builder.build())
 }

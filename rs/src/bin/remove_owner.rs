@@ -9,7 +9,7 @@ use safe_rust_playground::{
     SAFE_MANAGER_URI,
 };
 
-const OWNER_TO_BE_ADDED: &str = "0x0Ce3cC862b26FC643aA8A73D2D30d47EF791941e";
+const OWNER_TO_BE_REMOVED: &str = "0x0Ce3cC862b26FC643aA8A73D2D30d47EF791941e";
 
 fn main() {
     let client = get_client(None);
@@ -22,12 +22,12 @@ fn main() {
 
     println!("Current owners of safe: {:#?}", owners.unwrap());
 
-    let add_owner_encoded = client.invoke::<String>(
+    let remove_owner_encoded = client.invoke::<String>(
         &SAFE_MANAGER_URI,
-        "encodeAddOwnerWithThresholdData",
+        "encodeRemoveOwnerData",
         Some(
             &serialize(&EncodeAddOwner {
-                owner_address: String::from(OWNER_TO_BE_ADDED),
+                owner_address: String::from(OWNER_TO_BE_REMOVED),
             })
             .unwrap(),
         ),
@@ -35,18 +35,21 @@ fn main() {
         None,
     );
 
-    if add_owner_encoded.is_err() {
-        panic!("Error encoding owner: {:?}", add_owner_encoded.unwrap_err())
+    if remove_owner_encoded.is_err() {
+        panic!(
+            "Error encoding owner: {:?}",
+            remove_owner_encoded.unwrap_err()
+        )
     }
 
     println!(
         "Add owner encoded: {:?}",
-        add_owner_encoded.clone().unwrap()
+        remove_owner_encoded.clone().unwrap()
     );
 
     let transaction = Transaction {
         to: SAFE_ADDRESS.clone(),
-        data: add_owner_encoded.unwrap(),
+        data: remove_owner_encoded.unwrap(),
         value: String::from("0"),
     };
 
@@ -81,7 +84,7 @@ fn main() {
         "addSignature",
         Some(
             &serialize(&AddSignatureArgs {
-                tx: create_transaction.unwrap(),
+                tx: create_transaction.unwrap()
             })
             .unwrap(),
         ),
@@ -100,13 +103,6 @@ fn main() {
         "Transaction signed: {:#?}",
         sign_transaction.clone().unwrap()
     );
-
-    let serialized_sign_transaction = serialize(&ExecuteTransactionArgs {
-        tx: sign_transaction.clone().unwrap(),
-    })
-    .unwrap();
-    println!("LA SERIALIZACION");
-    dbg!(serialized_sign_transaction);
 
     let execute_transaction = client.invoke::<TxReceipt>(
         &SAFE_MANAGER_URI,
@@ -132,5 +128,8 @@ fn main() {
         "Transaction executed with hash: {:?}",
         execute_transaction.unwrap().transaction_hash
     );
-    print!("Owner with address: {} has been added", OWNER_TO_BE_ADDED);
+    print!(
+        "Owner with address: {} has been removed",
+        OWNER_TO_BE_REMOVED
+    );
 }

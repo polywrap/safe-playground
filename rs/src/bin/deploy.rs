@@ -4,42 +4,8 @@ extern crate serde;
 
 use polywrap_client::msgpack::serialize;
 use safe_rust_playground::{
-    constants::ETHERS_CORE_WRAPPER_URI, helpers::get_client, SAFE_FACTORY_URI,
+    constants::ETHERS_CORE_WRAPPER_URI, helpers::get_client, SAFE_FACTORY_URI, DeploymentArgs, DeploymentInput, AccountConfig, DeploymentConfig,
 };
-use serde::{Deserialize, Serialize};
-
-#[derive(Clone, Debug, Deserialize, Serialize)]
-struct Connection {
-    #[serde(rename = "networkNameOrChainId")]
-    pub network_name_or_chain_id: Option<String>,
-    pub node: Option<String>,
-}
-
-#[derive(Serialize, Deserialize)]
-struct AccountConfig {
-    owners: Vec<String>,
-    threshold: u32,
-}
-
-#[derive(Serialize, Deserialize)]
-struct DeploymentConfig {
-    #[serde(rename = "saltNonce")]
-    salt_nonce: String,
-}
-
-#[derive(Serialize, Deserialize)]
-struct DeploymentInput {
-    #[serde(rename = "safeAccountConfig")]
-    safe_account_config: AccountConfig,
-    #[serde(rename = "safeDeploymentConfig")]
-    safe_deployment_config: DeploymentConfig,
-    connection: Option<Connection>,
-}
-
-#[derive(Serialize, Deserialize)]
-struct DeploymentArgs {
-    input: DeploymentInput,
-}
 
 fn main() {
     println!("Getting client");

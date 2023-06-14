@@ -3934,6 +3934,7 @@ dependencies = [
  "base64 0.13.1",
  "dotenv",
  "lazy_static",
+ "num-bigint",
  "polywrap_client",
  "polywrap_client_default_config",
  "polywrap_datetime_plugin",
