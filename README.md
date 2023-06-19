@@ -1,7 +1,5 @@
 # **AA Wrap Demo** &middot; [![license](https://img.shields.io/badge/license-MIT-blue)](https://shields.io)
 
-<!-- This demo showcases how the AA Wrap can be used to integrate account abstraction functionality into different deployment platforms – web browsers, mobile, gaming and beyond. -->
-
 <img src="images/multiplatform.png" width="500x">
 
 ## What's the AA Wrap?
@@ -29,13 +27,27 @@ In this demo, you'll be executing scripts that showcase the AA Wrap's main value
 
 First, you'll set up the demo.
 
-1. Change directory to `js`:
+1. Create and configure a `.env` file with the following variables (you can use the `RPC_URL` provided below):
+
+```bash
+OWNER_ONE_PRIVATE_KEY=
+OWNER_TWO_PRIVATE_KEY=
+RPC_URL="https://goerli.infura.io/v3/41fbecf847994df5a9652b1210effd8a"
+```
+
+2. Create two new accounts in MetaMask for testing purposes. [Export the private keys](https://support.metamask.io/hc/en-us/articles/360015289632-How-to-export-an-account-s-private-key) and input them as values for `OWNER_ONE_PRIVATE_KEY` and `OWNER_TWO_PRIVATE_KEY`.
+
+> ⚠️ Make sure these two accounts are ones that you're only using for testing purposes.
+
+3. Supply your two accounts with Goerli ETH in order to send transactions. You can use a [Goerli faucet](https://goerlifaucet.com/) to do this.
+
+4. Change directory to `js`:
 
 ```
 cd js
 ```
 
-2. Update the salt nonce in `deploy-safe.ts` to `0x` followed by a few randomly chosen digits. For example,
+5. Update the salt nonce in `./scripts/deploy-safe.ts` to `0x` followed by a few randomly chosen digits. For example,
 
 This salt nonce is used later to create the new Safe address.
 
@@ -43,7 +55,7 @@ This salt nonce is used later to create the new Safe address.
 const SALT_NONCE = "0x185593";
 ```
 
-3. Run the `deploy-safe.ts` script to deploy the Safe smart account.
+6. Run the `./scripts/deploy-safe.ts` script to deploy the Safe smart account.
 
 ```
 yarn deploy
@@ -51,20 +63,12 @@ yarn deploy
 
 > For the purposes of this demo, we're deploying to the Goerli test network. You can view your Safe on [Goerli Etherscan block explorer](https://goerli.etherscan.io/).
 
-4. Create a `.env` file at the root of the repo and add in the Safe address:
+7. Add the Safe address in your `.env` file:
 
 You should have received the Safe address after deploying it.
 
-Copy and paste this address into your `.env` file:
-
 ```bash
 SAFE_ADDRESS="0x..."
-```
-
-5. Finally, add the a Safe transaction signer by running:
-
-```
-yarn add-owner
 ```
 
 Congratulations! You're done configuring the demo and deploying your own Safe smart account. 🥳
@@ -87,7 +91,7 @@ The above scripts were run in a JavaScript environment. We've also prepared scri
 
 First, you need to be in the `rs` directory.
 
-Then, update the salt nonce in the `deploy.rs` file:
+Then, update the salt nonce in the `./bin/deploy.rs` file:
 
 ```rs
     let deployment_input = DeploymentArgs {
@@ -112,11 +116,12 @@ cargo run --bin --release <script>
 
 Where `<script>` is one of the following:
 
-| Script       | Description                     |
-| ------------ | ------------------------------- |
-| `deploy`     | Deploys your Safe smart account |
-| `add_owners` | Add owners to the Safe          |
-| `get_owners` | Get the list of owners          |
+| Script                | Description                     |
+| --------------------- | ------------------------------- |
+| `deploy`              | Deploys your Safe smart account |
+| `add_owners`          | Add owners to the Safe          |
+| `get_owners`          | Get the list of owners          |
+| `sponsor_transaction` | Execute a sponsored transaction |
 
 # Community & Contributing
 
