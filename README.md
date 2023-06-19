@@ -1,8 +1,18 @@
 # **AA Wrap Demo** &middot; [![license](https://img.shields.io/badge/license-MIT-blue)](https://shields.io)
 
-<img src="images/multiplatform.png" width="500x">
+## Table of Contents
 
-## What's the AA Wrap?
+- [The AA Wrap](#the-account-abstraction-aa-wrap)
+- [Demo Overview](#demo-overview)
+- [Demo Setup](#demo-setup)
+- [Demo Scripts](#demo-scripts)
+- [Multiplatform Support: Rust](#multiplatform-support-rust)
+- [Scripts Explanation](#scripts-explanation)
+- [Community & Contributing](#community--contributing)
+
+## The Account Abstraction (AA) Wrap
+
+<img src="images/multiplatform.png" width="500x">
 
 The AA Wrap is a Polywrap-powered version of the [Safe Account Abstraction (AA) SDK](https://docs.safe.global/learn/safe-core/safe-core-account-abstraction-sdk).
 
@@ -83,7 +93,7 @@ The scripts below show complex transactions that your smart account can execute.
 | `execute-sponsored` | Uses the Gelato relay Wrap to execute a sponsored transaction |
 | `execute-multisend` | Sends transactions to multiple recipients                     |
 
-## Multi-platform Support: Rust
+## Multiplatform Support: Rust
 
 One of the powerful advantages of the AA Wrap is that it can be used in any app, as long as the app has a Polywrap client library installed.
 
@@ -122,6 +132,34 @@ Where `<script>` is one of the following:
 | `add_owners`          | Add owners to the Safe          |
 | `get_owners`          | Get the list of owners          |
 | `sponsor_transaction` | Execute a sponsored transaction |
+
+# Scripts Explanation
+
+This section presents an in-depth look at two of the scripts: multisend and sponsored transactions.
+
+The scripts fetch a chain of Wraps from IPFS.
+
+## Multisend
+
+This script sends test ERC-20 tokens to two separate recipient addresses.
+
+1. Invokes **Ethers Wrap** to get the balance of the Safe
+2. Invokes **Ethers Wrap** to mint test ERC-20 tokens to the Safe
+3. Invokes **Ethers Wrap** to transfer half the amount of test tokens to `receiverOne`
+4. Invokes **Ethers Wrap** to transfer the other half the amount of test tokens to `receiverTwo`
+5. Invokes **Safe Wrap** to batch these two transactions into a multisend using `createMultiSendTransaction` method
+6. Invokes **Safe Wrap** to add signatures of the two owners to this batch transaction
+7. Invokes **Safe Wrap** to `executeTransaction`
+
+## Sponsored Transaction
+
+This script sends a transaction to the Gelato Relayer which executes the transaction on behalf of the user. The user can execute the transaction using ERC-20s instead of ETH, thanks to the Gelato Relayer.
+
+1. Invokes **Ethers Wrap** to store a value `7` on a `storage` smart contract
+2. Defines `metaTransactionData` which has the `storage` smart contract address
+3. Invokes **Ethers Wrap** to estimate the gas fees in ETH
+4. Invokes **Account Abstraction Wrap** to predict the Safe address using `getSafeAddress` method
+5. Invokes **Account Abstraction Wrap** to `relayTransaction`, relaying the transaction to update the `storage` contract value to `7`
 
 # Community & Contributing
 
