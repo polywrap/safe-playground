@@ -47,7 +47,7 @@ RPC_URL="https://goerli.infura.io/v3/41fbecf847994df5a9652b1210effd8a"
 
 2. Create two new accounts in MetaMask for testing purposes. [Export the private keys](https://support.metamask.io/hc/en-us/articles/360015289632-How-to-export-an-account-s-private-key) and input them as values for `OWNER_ONE_PRIVATE_KEY` and `OWNER_TWO_PRIVATE_KEY`.
 
-> ⚠️ Make sure these two accounts are ones that you're only using for testing purposes.
+> ⚠️ Make sure these two accounts are ones that you're only using for testing purposes!
 
 3. Supply your two accounts with Goerli ETH in order to send transactions. You can use a [Goerli faucet](https://goerlifaucet.com/) to do this.
 
@@ -95,7 +95,7 @@ The scripts below show complex transactions that your smart account can execute.
 
 ## Multiplatform Support: Rust
 
-One of the powerful advantages of the AA Wrap is that it can be used in any app, as long as the app has a Polywrap client library installed.
+One of the AA Wrap's powerful advantages is that it can be used in any app, as long as the app has a Polywrap client library installed.
 
 The above scripts were run in a JavaScript environment. We've also prepared scripts that run in **Rust** below.
 
@@ -137,27 +137,23 @@ Where `<script>` is one of the following:
 
 This section presents an in-depth look at two of the scripts: multisend and sponsored transactions.
 
-The scripts fetch a chain of Wraps from IPFS.
-
 ## Multisend
 
 This script sends test ERC-20 tokens to two separate recipient addresses.
 
-1. Invokes **Ethers Wrap** to get the balance of the Safe
-2. Invokes **Ethers Wrap** to mint test ERC-20 tokens to the Safe
-3. Invokes **Ethers Wrap** to transfer half the amount of test tokens to `receiverOne`
-4. Invokes **Ethers Wrap** to transfer the other half the amount of test tokens to `receiverTwo`
-5. Invokes **Safe Wrap** to batch these two transactions into a multisend using `createMultiSendTransaction` method
-6. Invokes **Safe Wrap** to add signatures of the two owners to this batch transaction
-7. Invokes **Safe Wrap** to `executeTransaction`
+1. Invokes **Ethers Wrap** to mint test ERC-20 tokens to the Safe
+2. Invokes **Ethers Wrap** to transfer half of the test tokens to `receiverOne` and the other half to `receiverTwo`
+3. Invokes **Safe Wrap** to batch these two transactions into a multisend transaction using `createMultiSendTransaction` method
+4. Invokes **Safe Wrap** to add the signatures of the two owners to this batch transaction
+5. Invokes **Safe Wrap** to `executeTransaction`
 
 ## Sponsored Transaction
 
-This script sends a transaction to the Gelato Relayer which executes the transaction on behalf of the user. The user can execute the transaction using ERC-20s instead of ETH, thanks to the Gelato Relayer.
+This script sends a transaction to the Gelato Relayer which executes the transaction on behalf of the user.
 
 1. Invokes **Ethers Wrap** to store a value `7` on a `storage` smart contract
 2. Defines `metaTransactionData` which has the `storage` smart contract address
-3. Invokes **Ethers Wrap** to estimate the gas fees in ETH
+3. Invokes **Ethers Wrap** to estimate the ETH gas fees to be paid
 4. Invokes **Account Abstraction Wrap** to predict the Safe address using `getSafeAddress` method
 5. Invokes **Account Abstraction Wrap** to `relayTransaction`, relaying the transaction to update the `storage` contract value to `7`
 
