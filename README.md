@@ -45,19 +45,27 @@ OWNER_TWO_PRIVATE_KEY=
 RPC_URL="https://goerli.infura.io/v3/41fbecf847994df5a9652b1210effd8a"
 ```
 
-2. Create two new accounts in MetaMask for testing purposes. [Export the private keys](https://support.metamask.io/hc/en-us/articles/360015289632-How-to-export-an-account-s-private-key) and input them as values for `OWNER_ONE_PRIVATE_KEY` and `OWNER_TWO_PRIVATE_KEY`.
+2. Create two new accounts in MetaMask for testing purposes. [Export the private keys](https://support.metamask.io/hc/en-us/articles/360015289632-How-to-export-an-account-s-private-key) and input them as values for `OWNER_ONE_PRIVATE_KEY` and `OWNER_TWO_PRIVATE_KEY` in the `.env` file.
 
 > ⚠️ Make sure these two accounts are ones that you're only using for testing purposes!
 
 3. Supply your two accounts with Goerli ETH in order to send transactions. You can use a [Goerli faucet](https://goerlifaucet.com/) to do this.
 
-4. Change directory to `js`:
+4. In the `./scripts/owners/add.ts` file, update the `OWNER_TO_BE_ADDED` variable to be the wallet address of `OWNER_TWO`.
+
+5. Add this owner using:
+
+```
+yarn add-owner
+```
+
+5. Change directory to `js`:
 
 ```
 cd js
 ```
 
-5. Update the salt nonce in `./scripts/deploy-safe.ts` to `0x` followed by a few randomly chosen digits. For example,
+6. Update the salt nonce in `./scripts/deploy-safe.ts` to `0x` followed by a few randomly chosen digits. For example,
 
 This salt nonce is used later to create the new Safe address.
 
@@ -65,7 +73,7 @@ This salt nonce is used later to create the new Safe address.
 const SALT_NONCE = "0x185593";
 ```
 
-6. Run the `./scripts/deploy-safe.ts` script to deploy the Safe smart account.
+7. Run the `./scripts/deploy-safe.ts` script to deploy the Safe smart account.
 
 ```
 yarn deploy
@@ -73,7 +81,7 @@ yarn deploy
 
 > For the purposes of this demo, we're deploying to the Goerli test network. You can view your Safe on [Goerli Etherscan block explorer](https://goerli.etherscan.io/).
 
-7. Add the Safe address in your `.env` file:
+8. Add the Safe address in your `.env` file:
 
 You should have received the Safe address after deploying it.
 
