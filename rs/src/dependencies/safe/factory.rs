@@ -8,13 +8,13 @@ const WRAP_INFO: &[u8] = include_bytes!("../../../../wrap-dependencies/safe/fact
 const WRAP_WASM: &[u8] = include_bytes!("../../../../wrap-dependencies/safe/factory/wrap.wasm");
 
 pub fn wasm_package() -> WasmPackage {
-    WasmPackage::new(
+    WasmPackage::from_bytecode(
+        WRAP_WASM.to_vec(),
         Arc::new(SimpleFileReader::new()),
         Some(WRAP_INFO.to_vec()),
-        Some(WRAP_WASM.to_vec()),
     )
 }
 
 pub fn wasm_wrapper() -> WasmWrapper {
-    WasmWrapper::new(WRAP_WASM.to_vec(), Arc::new(SimpleFileReader::new()))
+    WasmWrapper::try_from_bytecode(&WRAP_WASM.to_vec(), Arc::new(SimpleFileReader::new())).unwrap()
 }

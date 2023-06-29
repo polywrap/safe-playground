@@ -120,7 +120,7 @@ pub struct SignSignature {
 pub struct MetaTransactionData {
     pub to: String,
     pub data: String,
-    pub operation: String,
+    pub operation: Option<String>,
     pub value: String,
 }
 
@@ -149,7 +149,7 @@ pub struct AccountConfig {
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct DeploymentConfig {
     #[serde(rename = "saltNonce")]
-    pub salt_nonce: String,
+    pub salt_nonce: Option<String>,
 }
 
 #[derive(Serialize, Deserialize)]
@@ -190,7 +190,9 @@ pub struct MetaTransactionOptions {
     #[serde(rename = "gasLimit")]
     pub gas_limit: String,
     #[serde(rename = "isSponsored")]
-    pub is_sponsored: bool,
+    pub is_sponsored: Option<bool>,
+    #[serde(rename = "gasToken")]
+    pub gas_token: Option<String>,
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize)]

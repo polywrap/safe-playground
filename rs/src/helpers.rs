@@ -25,21 +25,27 @@ use crate::{
     OWNER_ONE_PRIVATE_KEY, SAFE_ADDRESS,
 };
 use polywrap_client::{
-    builder::types::{ClientBuilder, ClientConfigHandler},
+    builder::{PolywrapClientConfig, PolywrapClientConfigBuilder},
     client::PolywrapClient,
-    core::uri::Uri,
-    msgpack::serialize,
+    core::{client::ClientConfigBuilder, uri::Uri},
+    msgpack::to_vec,
     plugin::package::PluginPackage,
 };
-use polywrap_client_default_config::build;
+use polywrap_client_default_config::{SystemClientConfig, Web3ClientConfig};
 use polywrap_datetime_plugin::DatetimePlugin;
 use polywrap_ethereum_wallet_plugin::{
     connection::Connection, connections::Connections, EthereumWalletPlugin,
 };
+use serde::Serialize;
+
+#[derive(Serialize)]
+pub struct GetOwnersArgs {}
 
 pub fn get_client(private_key: Option<String>) -> PolywrapClient {
     dotenv::from_path("../.env").ok();
-    let mut builder = build();
+    let mut config = PolywrapClientConfig::new();
+    config.add(SystemClientConfig::default().into());
+    // .add(Web3ClientConfig::default().into());
 
     let signer = if let Some(s) = private_key {
         s
@@ -50,6 +56,7 @@ pub fn get_client(private_key: Option<String>) -> PolywrapClient {
     let url = env::var("RPC_URL").unwrap_or_else(|_| {
         "https://goerli.infura.io/v3/41fbecf847994df5a9652b1210effd8a".to_string()
     });
+
     let connection = Connection::new(url, Some(signer)).unwrap();
     let connections = Connections::new(
         HashMap::from([(NETWORK.to_string(), connection)]),
@@ -64,7 +71,7 @@ pub fn get_client(private_key: Option<String>) -> PolywrapClient {
     let plugin_pkg: PluginPackage = datetime_plugin.into();
     let datetime_package = Arc::new(plugin_pkg);
 
-    builder.add_packages(vec![
+    config.add_packages(vec![
         (
             Uri::try_from("wrap://ens/wraps.eth:ethereum-provider@2.0.0").unwrap(),
             ethers_wallet_package,
@@ -75,7 +82,7 @@ pub fn get_client(private_key: Option<String>) -> PolywrapClient {
         ),
     ]);
 
-    builder.add_wrappers(vec![
+    config.add_wrappers(vec![
         (
             ETHERS_CORE_WRAPPER_URI.clone(),
             Arc::new(ethers_core_wrapper()),
@@ -105,34 +112,34 @@ pub fn get_client(private_key: Option<String>) -> PolywrapClient {
     ]);
 
     let schema_connection = SchemaConnection {
-        network_name_or_chain_id: Some("goerli".to_string()),
+        network_name_or_chain_id: Some(NETWORK.clone()),
         node: None,
     };
 
-    builder.add_envs(HashMap::from([
+    config.add_envs(HashMap::from([
         (
-            SAFE_MANAGER_URI.clone().uri,
-            serialize(&SafeManagerEnv {
+            SAFE_MANAGER_URI.clone(),
+            to_vec(&SafeManagerEnv {
                 connection: schema_connection.clone(),
                 safe_address: SAFE_ADDRESS.clone(),
             })
             .unwrap(),
         ),
         (
-            RELAYER_ADAPTER_WRAPPER_URI.clone().uri,
-            serialize(&RelayerAdapterEnv {
+            RELAYER_ADAPTER_WRAPPER_URI.clone(),
+            to_vec(&RelayerAdapterEnv {
                 relayer_api_key: "AiaCshYRyAUzTNfZZb8LftJaAl2SS3I8YwhJJXc5J7A_".to_string(),
             })
             .unwrap(),
         ),
         (
-            ACCOUNT_ABSTRACTION_WRAPPER_URI.clone().uri,
-            serialize(&AccountAbstractionEnv {
+            ACCOUNT_ABSTRACTION_WRAPPER_URI.clone(),
+            to_vec(&AccountAbstractionEnv {
                 connection: schema_connection,
             })
             .unwrap(),
         ),
     ]));
 
-    PolywrapClient::new(builder.build())
+    PolywrapClient::new(config.build())
 }

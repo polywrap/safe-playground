@@ -6,7 +6,7 @@ extern crate serde;
 use std::{ops::Add, str::FromStr};
 
 use num_bigint::BigInt;
-use polywrap_client::msgpack::serialize;
+use polywrap_client::msgpack::to_vec;
 use safe_rust_playground::{
     helpers::get_client, DeploymentConfig, EncodeFunctionArgs, EstimateTransactionGasArgs,
     GetEstimateFeeArgs, GetSafeAddressArgs, MetaTransactionData, MetaTransactionOptions,
@@ -14,9 +14,7 @@ use safe_rust_playground::{
     ETHERS_CORE_WRAPPER_URI, ETHERS_UTILS_WRAPPER_URI, RELAYER_ADAPTER_WRAPPER_URI,
 };
 
-const STORAGE_CONTRACT: &str = "0x57c94aa4a136506d3b88d84473bf3dc77f5b51da";
-const NEW_STORED_NUMBER: &str = "19";
-const SALT_NONCE: &str = "0x2588023387282";
+const SALT_NONCE: &str = "0x2544";
 
 fn main() {
     let client = get_client(None);
@@ -25,9 +23,9 @@ fn main() {
         &ETHERS_UTILS_WRAPPER_URI,
         "encodeFunction",
         Some(
-            &serialize(&EncodeFunctionArgs {
+            &to_vec(&EncodeFunctionArgs {
                 method: String::from("function store(uint256 num) public"),
-                args: Vec::from([NEW_STORED_NUMBER.to_string()]),
+                args: Vec::from(["10".to_string()]),
             })
             .unwrap(),
         ),
@@ -43,48 +41,21 @@ fn main() {
     }
 
     let meta_transaction_data = MetaTransactionData {
-        data: encoded_transaction.clone().unwrap(),
-        to: STORAGE_CONTRACT.to_string(),
+        to: "0x56535D1162011E54aa2F6B003d02Db171c17e41e".to_string(),
         value: "0".to_string(),
-        operation: "0".to_string(),
+        data: encoded_transaction.clone().unwrap(),
+        operation: Some("0".to_string()),
     };
-
-    let safe_address = client.invoke::<String>(
-        &ACCOUNT_ABSTRACTION_WRAPPER_URI,
-        "getSafeAddress",
-        Some(
-            &serialize(&GetSafeAddressArgs {
-                config: DeploymentConfig {
-                    salt_nonce: SALT_NONCE.clone().to_string(),
-                },
-            })
-            .unwrap(),
-        ),
-        None,
-        None,
-    );
-
-    if safe_address.is_err() {
-        panic!(
-            "Error getting safe address: {}",
-            safe_address.clone().unwrap_err()
-        )
-    }
-
-    println!(
-        "Predicted safe address: {:#?}",
-        safe_address.clone().unwrap()
-    );
 
     let gas_limit = client.invoke::<String>(
         &ETHERS_CORE_WRAPPER_URI,
         "estimateTransactionGas",
         Some(
-            &serialize(&EstimateTransactionGasArgs {
+            &to_vec(&EstimateTransactionGasArgs {
                 tx: Transaction {
-                    data: encoded_transaction.clone().unwrap(),
-                    to: STORAGE_CONTRACT.to_string(),
-                    value: "0".to_string(),
+                    data: meta_transaction_data.data.clone(),
+                    to: meta_transaction_data.to.clone(),
+                    value: meta_transaction_data.value.clone(),
                 },
             })
             .unwrap(),
@@ -102,12 +73,11 @@ fn main() {
 
     let gas_limit_with_buffer = BigInt::from_str(&gas_limit.unwrap()).unwrap();
     let gas_limit_with_buffer = gas_limit_with_buffer.add(BigInt::from_str("250000").unwrap());
-
     let estimation = client.invoke::<String>(
         &RELAYER_ADAPTER_WRAPPER_URI,
         "getEstimateFee",
         Some(
-            &serialize(&GetEstimateFeeArgs {
+            &to_vec(&GetEstimateFeeArgs {
                 chain_id: 5,
                 gas_limit: gas_limit_with_buffer.clone().to_string(),
             })
@@ -128,7 +98,7 @@ fn main() {
         &ETHERS_UTILS_WRAPPER_URI,
         "toEth",
         Some(
-            &serialize(&ToEthArgs {
+            &to_vec(&ToEthArgs {
                 wei: estimation.unwrap(),
             })
             .unwrap(),
@@ -144,21 +114,22 @@ fn main() {
         )
     }
 
-    println!("Fee estimation: {}", estimation_in_eth.unwrap());
+    println!("Fee estimation: {} ETH", estimation_in_eth.unwrap());
     println!("Relaying sponsored transaction...");
 
     let execute_transaction = client.invoke::<String>(
         &ACCOUNT_ABSTRACTION_WRAPPER_URI,
         "relayTransaction",
         Some(
-            &serialize(&RelayTransactionArgs {
+            &to_vec(&RelayTransactionArgs {
                 transaction: meta_transaction_data,
                 options: MetaTransactionOptions {
                     gas_limit: gas_limit_with_buffer.to_string(),
-                    is_sponsored: true,
+                    is_sponsored: Some(true),
+                    gas_token: None,
                 },
                 config: DeploymentConfig {
-                    salt_nonce: SALT_NONCE.to_string(),
+                    salt_nonce: Some(SALT_NONCE.to_string()),
                 },
             })
             .unwrap(),

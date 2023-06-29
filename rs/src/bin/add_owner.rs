@@ -2,10 +2,10 @@ extern crate polywrap_client;
 extern crate safe_rust_playground;
 extern crate serde;
 
-use polywrap_client::msgpack::serialize;
+use polywrap_client::msgpack::to_vec;
 use safe_rust_playground::{
     helpers::get_client, AddSignatureArgs, CreateTransactionArgs, EncodeAddOwner,
-    ExecuteTransactionArgs, SafeTransaction, Transaction, TxReceipt, SAFE_ADDRESS,
+    ExecuteTransactionArgs, GetOwnersArgs, SafeTransaction, Transaction, TxReceipt, SAFE_ADDRESS,
     SAFE_MANAGER_URI,
 };
 
@@ -13,8 +13,13 @@ const OWNER_TO_BE_ADDED: &str = "0x0Ce3cC862b26FC643aA8A73D2D30d47EF791941e";
 
 fn main() {
     let client = get_client(None);
-    let owners =
-        client.invoke::<Vec<String>>(&SAFE_MANAGER_URI.clone(), "getOwners", None, None, None);
+    let owners = client.invoke::<Vec<String>>(
+        &SAFE_MANAGER_URI.clone(),
+        "getOwners",
+        Some(&to_vec(&GetOwnersArgs {}).unwrap()),
+        None,
+        None,
+    );
 
     if owners.is_err() {
         panic!("Error fetching owners")
@@ -26,7 +31,7 @@ fn main() {
         &SAFE_MANAGER_URI,
         "encodeAddOwnerWithThresholdData",
         Some(
-            &serialize(&EncodeAddOwner {
+            &to_vec(&EncodeAddOwner {
                 owner_address: String::from(OWNER_TO_BE_ADDED),
             })
             .unwrap(),
@@ -55,7 +60,7 @@ fn main() {
         &SAFE_MANAGER_URI,
         "createTransaction",
         Some(
-            &serialize(&CreateTransactionArgs {
+            &to_vec(&CreateTransactionArgs {
                 tx: transaction.clone(),
             })
             .unwrap(),
@@ -80,7 +85,7 @@ fn main() {
         &SAFE_MANAGER_URI,
         "addSignature",
         Some(
-            &serialize(&AddSignatureArgs {
+            &to_vec(&AddSignatureArgs {
                 tx: create_transaction.unwrap(),
             })
             .unwrap(),
@@ -101,18 +106,11 @@ fn main() {
         sign_transaction.clone().unwrap()
     );
 
-    let serialized_sign_transaction = serialize(&ExecuteTransactionArgs {
-        tx: sign_transaction.clone().unwrap(),
-    })
-    .unwrap();
-    println!("LA SERIALIZACION");
-    dbg!(serialized_sign_transaction);
-
     let execute_transaction = client.invoke::<TxReceipt>(
         &SAFE_MANAGER_URI,
         "executeTransaction",
         Some(
-            &serialize(&ExecuteTransactionArgs {
+            &to_vec(&ExecuteTransactionArgs {
                 tx: sign_transaction.unwrap(),
             })
             .unwrap(),

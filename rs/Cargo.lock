@@ -44,7 +44,7 @@ version = "0.7.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "fcb51a0695d8f838b1ee009b3fbf66bda078cd64590202a864a8f3e8c4315c47"
 dependencies = [
- "getrandom 0.2.10",
+ "getrandom",
  "once_cell",
  "version_check 0.9.4",
 ]
@@ -56,7 +56,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "2c99f64d1e06488f620f932677e24bc6e2897582980441ae90a671415bd7ec2f"
 dependencies = [
  "cfg-if",
- "getrandom 0.2.10",
+ "getrandom",
  "once_cell",
  "serde",
  "version_check 0.9.4",
@@ -275,6 +275,7 @@ dependencies = [
  "num-bigint",
  "num-integer",
  "num-traits",
+ "serde",
 ]
 
 [[package]]
@@ -581,7 +582,7 @@ dependencies = [
  "bs58",
  "coins-core",
  "digest 0.10.7",
- "getrandom 0.2.10",
+ "getrandom",
  "hmac",
  "k256",
  "lazy_static",
@@ -598,7 +599,7 @@ checksum = "84f4d04ee18e58356accd644896aeb2094ddeafb6a713e056cef0c0a8e468c15"
 dependencies = [
  "bitvec 0.17.4",
  "coins-bip32",
- "getrandom 0.2.10",
+ "getrandom",
  "hmac",
  "once_cell",
  "pbkdf2 0.12.1",
@@ -1699,17 +1700,6 @@ dependencies = [
 
 [[package]]
 name = "getrandom"
-version = "0.1.16"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8fc3cb4d91f53b50155bdcfd23f6a4c39ae1969c2ae85982b135750cccaf5fce"
-dependencies = [
- "cfg-if",
- "libc",
- "wasi 0.9.0+wasi-snapshot-preview1",
-]
-
-[[package]]
-name = "getrandom"
 version = "0.2.10"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "be4136b2a15dd319360be1c07d9933517ccf0be8f16bf62a3bee4f0d618df427"
@@ -2437,9 +2427,9 @@ checksum = "7843ec2de400bcbc6a6328c958dc38e5359da6e93e72e37bc5246bf1ae776389"
 
 [[package]]
 name = "multipart"
-version = "0.17.1"
+version = "0.18.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d050aeedc89243f5347c3e237e3e13dc76fbe4ae3742a57b94dc14f69acf76d4"
+checksum = "00dec633863867f29cb39df64a397cdf4a6354708ddd7759f70c7fb51c5f9182"
 dependencies = [
  "buf_redux",
  "httparse",
@@ -2450,7 +2440,7 @@ dependencies = [
  "mime_guess 2.0.4",
  "nickel",
  "quick-error",
- "rand 0.7.3",
+ "rand 0.8.5",
  "safemem",
  "tempfile",
  "tiny_http",
@@ -2527,6 +2517,7 @@ dependencies = [
  "autocfg 1.1.0",
  "num-integer",
  "num-traits",
+ "serde",
 ]
 
 [[package]]
@@ -2734,12 +2725,6 @@ name = "path-slash"
 version = "0.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1e91099d4268b0e11973f036e885d652fb0b21fedcf69738c627f94db6a44f42"
-
-[[package]]
-name = "pathdiff"
-version = "0.2.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8835116a5c179084a830efb3adc117ab007512b535bc1a21c991d3b32a6b44dd"
 
 [[package]]
 name = "pbkdf2"
@@ -3001,18 +2986,19 @@ dependencies = [
 
 [[package]]
 name = "polywrap_client"
-version = "0.1.6-beta.5"
+version = "0.1.6-beta.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "272d743a6ec04cd7bf2557e8cbaca40841498d03728a222d715ae4e9544c85e7"
+checksum = "aa5149f9266404428b994dc29a5ce3ec050d95aeb4782e233ec64efc72b9cc0e"
 dependencies = [
  "polywrap_client_builder",
  "polywrap_core",
- "polywrap_msgpack",
+ "polywrap_msgpack_serde",
  "polywrap_plugin",
  "polywrap_resolvers",
  "polywrap_wasm",
  "rmp-serde",
  "serde",
+ "serde_bytes",
  "serde_json",
  "thiserror",
  "wrap_manifest_schemas",
@@ -3020,12 +3006,13 @@ dependencies = [
 
 [[package]]
 name = "polywrap_client_builder"
-version = "0.1.6-beta.5"
+version = "0.1.6-beta.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "348b4c6221c7cbbc8a9bfb74da81175babf3001eddf8c802955c54546a1827b6"
+checksum = "db3fe401cbb0493195481f62689b769cc0aba371e919c7100bacce67046d0760"
 dependencies = [
  "polywrap_core",
- "polywrap_msgpack",
+ "polywrap_msgpack_serde",
+ "polywrap_resolver_extensions",
  "polywrap_resolvers",
  "serde",
  "serde_json",
@@ -3033,16 +3020,16 @@ dependencies = [
 
 [[package]]
 name = "polywrap_client_default_config"
-version = "0.1.6-beta.5"
+version = "0.1.6-beta.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a101ee2b53f327f1e8416801f876f728a8f0af42ec4a02ef07f7c3941ea5fb71"
+checksum = "94a1035740751d0be014e3815ac078e7039340ecace167d5e11172ab156e5ada"
 dependencies = [
  "base64 0.13.1",
  "polywrap_client_builder",
  "polywrap_core",
  "polywrap_fs_plugin",
  "polywrap_http_plugin",
- "polywrap_msgpack",
+ "polywrap_msgpack_serde",
  "polywrap_plugin",
  "polywrap_resolvers",
  "polywrap_wasm",
@@ -3053,27 +3040,41 @@ dependencies = [
 
 [[package]]
 name = "polywrap_core"
-version = "0.1.6-beta.5"
+version = "0.1.6-beta.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "98d0a242d54912300c9d3f051269d94e8a27d0d0e11bdce1ee5aff0aeacdb622"
+checksum = "f81451d00470079c433ddcac1813e1cf3366123c389726b9c8aa4a7d5fcfd6d0"
 dependencies = [
  "jsonschema",
- "polywrap_msgpack",
+ "polywrap_core_macros",
+ "polywrap_msgpack_serde",
+ "polywrap_uri",
  "regex",
  "serde",
+ "serde_bytes",
  "thiserror",
  "wrap_manifest_schemas",
 ]
 
 [[package]]
-name = "polywrap_datetime_plugin"
-version = "0.0.1-beta.3"
+name = "polywrap_core_macros"
+version = "0.1.6-beta.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "dedb24ae6edcee8e4523b2da0cd098ed68f1b22c617f2a4f9943ecc6289b0a84"
+checksum = "61a2a2c2ba748e3193d85c93870996ddcb15a9b14c9134370e73cbbb4ef497a0"
+dependencies = [
+ "polywrap_uri",
+ "quote",
+ "syn 1.0.109",
+]
+
+[[package]]
+name = "polywrap_datetime_plugin"
+version = "0.0.1-beta.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d816d6cc174d439d7fc9952d9729f91a7f270ae5924efaf32182ff6c63b2479a"
 dependencies = [
  "chrono",
  "polywrap_core",
- "polywrap_msgpack",
+ "polywrap_msgpack_serde",
  "polywrap_plugin",
  "polywrap_resolvers",
  "serde",
@@ -3082,14 +3083,14 @@ dependencies = [
 
 [[package]]
 name = "polywrap_ethereum_wallet_plugin"
-version = "0.0.1-beta.5"
+version = "0.0.1-beta.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1e7ca0e9b24d11afbb19c0cab37a41b3b297d4929ebf09763a82b7b78af919f1"
+checksum = "83314878dbf54ee6ff690f6d3f69e8fc63aae09fbf643530dbea45f2d69d7703"
 dependencies = [
  "ethers",
  "lazy_static",
  "polywrap_core",
- "polywrap_msgpack",
+ "polywrap_msgpack_serde",
  "polywrap_plugin",
  "polywrap_resolvers",
  "serde",
@@ -3101,45 +3102,50 @@ dependencies = [
 
 [[package]]
 name = "polywrap_fs_plugin"
-version = "0.0.1-beta.3"
+version = "0.1.6-beta.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "bf17de32c215576c49aae1690e4b1ee6d4acd75a3871b0db218bc1bd76296086"
+checksum = "5721957a8cfb19c0ae87f6d6c7d6b6db61aca824eae3e76287d20cb79eb53668"
 dependencies = [
  "polywrap_core",
- "polywrap_msgpack",
+ "polywrap_msgpack_serde",
  "polywrap_plugin",
  "polywrap_resolvers",
  "rm_rf",
  "serde",
  "serde_bytes",
+ "thiserror",
  "wrap_manifest_schemas",
 ]
 
 [[package]]
 name = "polywrap_http_plugin"
-version = "0.0.1-beta.3"
+version = "0.1.6-beta.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6a595c8f38170820055a478de30d318494ea08f52ecd5e63e176a105567f86df"
+checksum = "86c7309e3423b36b1f44baac36b1ffae5d328670406712d347bd057b9d31eedb"
 dependencies = [
  "base64 0.13.1",
  "multipart",
  "polywrap_core",
- "polywrap_msgpack",
+ "polywrap_msgpack_serde",
  "polywrap_plugin",
  "polywrap_resolvers",
  "serde",
+ "serde_json",
+ "thiserror",
  "ureq",
  "wrap_manifest_schemas",
 ]
 
 [[package]]
-name = "polywrap_msgpack"
-version = "0.1.6-beta.5"
+name = "polywrap_msgpack_serde"
+version = "0.0.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "eded0a34d8592e781929acba30608955d188ae48f883dcac6972b8eeb1934641"
+checksum = "c11c46d47aeeaf22305c81cd0f20d3b4831f9024f31ccf94dee0550c296affd2"
 dependencies = [
- "rmp-serde",
- "rmpv",
+ "bigdecimal",
+ "byteorder",
+ "num-bigint",
+ "num-traits",
  "serde",
  "serde_bytes",
  "serde_json",
@@ -3148,15 +3154,15 @@ dependencies = [
 
 [[package]]
 name = "polywrap_plugin"
-version = "0.1.6-beta.5"
+version = "0.1.6-beta.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2ffebe9705ef7231aca65b1a50540579f6f9c5719bf26a84babbf8250bf1d4f5"
+checksum = "2fe5cb282ba70bcbdfaa25aea5e10b0a44ab643151c83fe6755cd2a50f959ba7"
 dependencies = [
  "Inflector",
  "bigdecimal",
  "num-bigint",
  "polywrap_core",
- "polywrap_msgpack",
+ "polywrap_msgpack_serde",
  "polywrap_plugin_implementor",
  "serde",
  "serde_json",
@@ -3166,9 +3172,9 @@ dependencies = [
 
 [[package]]
 name = "polywrap_plugin_implementor"
-version = "0.1.6-beta.5"
+version = "0.1.6-beta.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4a52f2c37a593e9bcce1ef140df68949fa4aaa419ff120cc5d0ec55caa9f21b9"
+checksum = "c0b3fc72fa0ba32ab423a924ae5bcc247a05dc13751ad2050982496a2e3010a7"
 dependencies = [
  "polywrap_core",
  "proc-macro2",
@@ -3178,14 +3184,29 @@ dependencies = [
 ]
 
 [[package]]
-name = "polywrap_resolvers"
-version = "0.1.6-beta.5"
+name = "polywrap_resolver_extensions"
+version = "0.1.6-beta.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7e8ade51e90251d5db70e2db3e8f8241114fa286647f455c8e92e9a6d4ac0ced"
+checksum = "5acb2bd56adff0fa220592b7154b3a15c7c32aa6d66121912787c8408581973b"
 dependencies = [
- "pathdiff",
  "polywrap_core",
- "polywrap_msgpack",
+ "polywrap_msgpack_serde",
+ "polywrap_resolvers",
+ "polywrap_wasm",
+ "regex",
+ "serde",
+ "serde_bytes",
+ "thiserror",
+]
+
+[[package]]
+name = "polywrap_resolvers"
+version = "0.1.6-beta.8"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d3d4eb8eb2d9f113b22f0f607cd54d6cfd7226884b439cd2e91ce2c64e297a2f"
+dependencies = [
+ "polywrap_core",
+ "polywrap_msgpack_serde",
  "polywrap_wasm",
  "regex",
  "serde",
@@ -3227,14 +3248,25 @@ dependencies = [
 ]
 
 [[package]]
-name = "polywrap_wasm"
-version = "0.1.6-beta.5"
+name = "polywrap_uri"
+version = "0.1.6-beta.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6384d9c72502252cb28ecbd8beb904162755b736bc9c12cd310a99e9dda3a85f"
+checksum = "f479ef7735b8a4d68e6252f6831ccd3e157970c90a5fa94962030e9be63bab0b"
+dependencies = [
+ "regex",
+ "serde",
+]
+
+[[package]]
+name = "polywrap_wasm"
+version = "0.1.6-beta.8"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "003b06487d2295f0537c3601679a77d378bb4d4b79f9fd5cebc564b2c81f35c9"
 dependencies = [
  "base64 0.13.1",
+ "bytes",
  "polywrap_core",
- "polywrap_msgpack",
+ "polywrap_msgpack_serde",
  "serde",
  "serde_json",
  "thiserror",
@@ -3387,26 +3419,13 @@ dependencies = [
  "libc",
  "rand_chacha 0.1.1",
  "rand_core 0.4.2",
- "rand_hc 0.1.0",
+ "rand_hc",
  "rand_isaac",
  "rand_jitter",
  "rand_os",
  "rand_pcg",
  "rand_xorshift",
  "winapi",
-]
-
-[[package]]
-name = "rand"
-version = "0.7.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6a6b1679d49b24bbfe0c803429aa1874472f50d9b363131f0e89fc356b544d03"
-dependencies = [
- "getrandom 0.1.16",
- "libc",
- "rand_chacha 0.2.2",
- "rand_core 0.5.1",
- "rand_hc 0.2.0",
 ]
 
 [[package]]
@@ -3428,16 +3447,6 @@ checksum = "556d3a1ca6600bfcbab7c7c91ccb085ac7fbbcd70e008a98742e7847f4f7bcef"
 dependencies = [
  "autocfg 0.1.8",
  "rand_core 0.3.1",
-]
-
-[[package]]
-name = "rand_chacha"
-version = "0.2.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f4c8ed856279c9737206bf725bf36935d8666ead7aa69b52be55af369d193402"
-dependencies = [
- "ppv-lite86",
- "rand_core 0.5.1",
 ]
 
 [[package]]
@@ -3467,20 +3476,11 @@ checksum = "9c33a3c44ca05fa6f1807d8e6743f3824e8509beca625669633be0acbdf509dc"
 
 [[package]]
 name = "rand_core"
-version = "0.5.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "90bde5296fc891b0cef12a6d03ddccc162ce7b2aff54160af9338f8d40df6d19"
-dependencies = [
- "getrandom 0.1.16",
-]
-
-[[package]]
-name = "rand_core"
 version = "0.6.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ec0be4795e2f6a28069bec0b5ff3e2ac9bafc99e6a9a7dc3547996c5c816922c"
 dependencies = [
- "getrandom 0.2.10",
+ "getrandom",
 ]
 
 [[package]]
@@ -3490,15 +3490,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7b40677c7be09ae76218dc623efbf7b18e34bced3f38883af07bb75630a21bc4"
 dependencies = [
  "rand_core 0.3.1",
-]
-
-[[package]]
-name = "rand_hc"
-version = "0.2.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ca3129af7b92a17112d59ad498c6f81eaf463253766b90396d39ea7a39d6613c"
-dependencies = [
- "rand_core 0.5.1",
 ]
 
 [[package]]
@@ -3609,7 +3600,7 @@ version = "0.4.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b033d837a7cf162d7993aded9304e30a83213c648b6e389db233191f891e5c2b"
 dependencies = [
- "getrandom 0.2.10",
+ "getrandom",
  "redox_syscall 0.2.16",
  "thiserror",
 ]
@@ -3823,18 +3814,6 @@ dependencies = [
  "byteorder",
  "rmp",
  "serde",
-]
-
-[[package]]
-name = "rmpv"
-version = "1.0.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "de8813b3a2f95c5138fe5925bfb8784175d88d6bff059ba8ce090aa891319754"
-dependencies = [
- "num-traits",
- "rmp",
- "serde",
- "serde_bytes",
 ]
 
 [[package]]
@@ -4905,7 +4884,7 @@ version = "0.8.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "bc5cf98d8186244414c848017f0e2676b3fcb46807f6668a97dfe67359a3c4b7"
 dependencies = [
- "getrandom 0.2.10",
+ "getrandom",
  "serde",
 ]
 
@@ -4946,12 +4925,6 @@ dependencies = [
  "log 0.4.18",
  "try-lock",
 ]
-
-[[package]]
-name = "wasi"
-version = "0.9.0+wasi-snapshot-preview1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "cccddf32554fecc6acb585f82a32a72e28b48f8c4c1883ddfeeeaa96f7d8e519"
 
 [[package]]
 name = "wasi"
@@ -5426,14 +5399,14 @@ dependencies = [
 
 [[package]]
 name = "wrap_manifest_schemas"
-version = "0.1.6-beta.5"
+version = "0.1.6-beta.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "53842cdae552d6e8f8ceace424e87e56f077a5467def1a2ca61d9cfcab3075ab"
+checksum = "01cf76f6dd10f975e852da2fef47fec32cd7364cdbb817e80f680e9f295e976c"
 dependencies = [
  "handlebars",
  "jsonschema",
  "polywrap-jsonref",
- "polywrap_msgpack",
+ "polywrap_msgpack_serde",
  "polywrap_schemafy",
  "semver",
  "serde",

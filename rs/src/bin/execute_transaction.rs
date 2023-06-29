@@ -2,15 +2,12 @@ extern crate polywrap_client;
 extern crate safe_rust_playground;
 extern crate serde;
 
-use polywrap_client::msgpack::serialize;
+use polywrap_client::msgpack::to_vec;
 use safe_rust_playground::{
     helpers::get_client, AddSignatureArgs, CreateTransactionArgs, EncodeFunctionArgs,
     ExecuteTransactionArgs, SafeTransaction, Transaction, TxReceipt, ETHERS_UTILS_WRAPPER_URI,
     OWNER_TWO_PRIVATE_KEY, SAFE_MANAGER_URI,
 };
-
-const STORAGE_CONTRACT: &str = "0x57c94aa4a136506d3b88d84473bf3dc77f5b51da";
-const NEW_STORED_NUMBER: &str = "19";
 
 fn main() {
     let client_with_owner_one = get_client(None);
@@ -20,9 +17,9 @@ fn main() {
         &ETHERS_UTILS_WRAPPER_URI,
         "encodeFunction",
         Some(
-            &serialize(&EncodeFunctionArgs {
+            &to_vec(&EncodeFunctionArgs {
                 method: String::from("function store(uint256 num) public"),
-                args: Vec::from([NEW_STORED_NUMBER.to_string()]),
+                args: Vec::from(["8".to_string()]),
             })
             .unwrap(),
         ),
@@ -37,7 +34,7 @@ fn main() {
 
     let transaction_to_execute = Transaction {
         data: encoded_transaction.unwrap(),
-        to: STORAGE_CONTRACT.to_string(),
+        to: "0x56535D1162011E54aa2F6B003d02Db171c17e41e".to_string(),
         value: "0x".to_string(),
     };
 
@@ -45,7 +42,7 @@ fn main() {
         &SAFE_MANAGER_URI,
         "createTransaction",
         Some(
-            &serialize(&CreateTransactionArgs {
+            &to_vec(&CreateTransactionArgs {
                 tx: transaction_to_execute.clone(),
             })
             .unwrap(),
@@ -58,7 +55,7 @@ fn main() {
         &SAFE_MANAGER_URI,
         "addSignature",
         Some(
-            &serialize(&AddSignatureArgs {
+            &to_vec(&AddSignatureArgs {
                 tx: create_transaction.unwrap(),
             })
             .unwrap(),
@@ -71,7 +68,7 @@ fn main() {
         &SAFE_MANAGER_URI,
         "addSignature",
         Some(
-            &serialize(&AddSignatureArgs {
+            &to_vec(&AddSignatureArgs {
                 tx: owner_one_signed_tx.unwrap(),
             })
             .unwrap(),
@@ -84,7 +81,7 @@ fn main() {
         &SAFE_MANAGER_URI,
         "executeTransaction",
         Some(
-            &serialize(&ExecuteTransactionArgs {
+            &to_vec(&ExecuteTransactionArgs {
                 tx: sign_transaction.unwrap(),
             })
             .unwrap(),
@@ -94,10 +91,8 @@ fn main() {
     );
 
     println!(
-        r#"
-    Transaction executed!
-    https://goerli.etherscan/tx/{:#?}
-    "#,
+        r#"Transaction executed!
+https://goerli.etherscan.io/tx/{}"#,
         execute_transaction.unwrap().transaction_hash
     )
 }

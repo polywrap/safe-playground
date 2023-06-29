@@ -2,21 +2,34 @@ extern crate polywrap_client;
 extern crate safe_rust_playground;
 extern crate serde;
 
-use polywrap_client::msgpack::serialize;
+use polywrap_client::msgpack::to_vec;
 use safe_rust_playground::{
-    constants::ETHERS_CORE_WRAPPER_URI, helpers::get_client, SAFE_FACTORY_URI, DeploymentArgs, DeploymentInput, AccountConfig, DeploymentConfig,
+    constants::ETHERS_CORE_WRAPPER_URI, helpers::get_client, AccountConfig, DeploymentArgs,
+    DeploymentConfig, DeploymentInput, SchemaConnection, SAFE_FACTORY_URI,
 };
+use serde::Serialize;
+
+#[derive(Serialize)]
+struct GetSignerAddressArgs {
+    connection: Option<SchemaConnection>,
+}
 
 fn main() {
-    println!("Getting client");
     let client = get_client(None);
-    println!("Client received!");
     println!("Getting signer address...");
     let signer_address: Result<String, polywrap_client::core::error::Error> = client
         .invoke::<String>(
             &ETHERS_CORE_WRAPPER_URI.clone(),
             "getSignerAddress",
-            None,
+            Some(
+                &to_vec(&GetSignerAddressArgs {
+                    connection: Some(SchemaConnection {
+                        network_name_or_chain_id: Some("goerli".to_string()),
+                        node: None,
+                    }),
+                })
+                .unwrap(),
+            ),
             None,
             None,
         );
@@ -34,7 +47,7 @@ fn main() {
                 threshold: 1,
             },
             safe_deployment_config: DeploymentConfig {
-                salt_nonce: "0x888444777".to_string(),
+                salt_nonce: Some("0x8884446577".to_string()),
             },
             connection: None,
         },
@@ -43,7 +56,7 @@ fn main() {
     let expected_safe_address = client.invoke::<String>(
         &SAFE_FACTORY_URI.clone(),
         "predictSafeAddress",
-        Some(&serialize(&deployment_input).unwrap()),
+        Some(&to_vec(&deployment_input).unwrap()),
         None,
         None,
     );
@@ -59,7 +72,7 @@ fn main() {
     let deploy_safe = client.invoke::<String>(
         &SAFE_FACTORY_URI.clone(),
         "deploySafe",
-        Some(&serialize(&deployment_input).unwrap()),
+        Some(&to_vec(&deployment_input).unwrap()),
         None,
         None,
     );
