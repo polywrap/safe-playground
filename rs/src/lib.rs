@@ -8,11 +8,9 @@ extern crate polywrap_ethereum_wallet_plugin;
 extern crate serde;
 
 pub mod constants;
-pub mod dependencies;
 pub mod helpers;
 pub mod types;
 
 pub use constants::*;
-pub use dependencies::*;
 pub use helpers::*;
 pub use types::*;

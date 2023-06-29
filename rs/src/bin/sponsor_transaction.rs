@@ -8,13 +8,13 @@ use std::{ops::Add, str::FromStr};
 use num_bigint::BigInt;
 use polywrap_client::msgpack::to_vec;
 use safe_rust_playground::{
-    helpers::get_client, DeploymentConfig, EncodeFunctionArgs, EstimateTransactionGasArgs,
-    GetEstimateFeeArgs, GetSafeAddressArgs, MetaTransactionData, MetaTransactionOptions,
-    RelayTransactionArgs, ToEthArgs, Transaction, ACCOUNT_ABSTRACTION_WRAPPER_URI,
-    ETHERS_CORE_WRAPPER_URI, ETHERS_UTILS_WRAPPER_URI, RELAYER_ADAPTER_WRAPPER_URI,
+    helpers::get_client, EncodeFunctionArgs, EstimateTransactionGasArgs, GetEstimateFeeArgs,
+    MetaTransactionData, MetaTransactionOptions, RelayTransactionArgs, SponsorDeploymentConfig,
+    ToEthArgs, Transaction, ACCOUNT_ABSTRACTION_WRAPPER_URI, ETHERS_CORE_WRAPPER_URI,
+    ETHERS_UTILS_WRAPPER_URI, RELAYER_ADAPTER_WRAPPER_URI,
 };
 
-const SALT_NONCE: &str = "0x2544";
+const SALT_NONCE: &str = "0x255544";
 
 fn main() {
     let client = get_client(None);
@@ -128,9 +128,9 @@ fn main() {
                     is_sponsored: Some(true),
                     gas_token: None,
                 },
-                config: DeploymentConfig {
+                config: Some(SponsorDeploymentConfig {
                     salt_nonce: Some(SALT_NONCE.to_string()),
-                },
+                }),
             })
             .unwrap(),
         ),

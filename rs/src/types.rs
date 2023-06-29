@@ -149,6 +149,12 @@ pub struct AccountConfig {
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct DeploymentConfig {
     #[serde(rename = "saltNonce")]
+    pub salt_nonce: String,
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct SponsorDeploymentConfig {
+    #[serde(rename = "saltNonce")]
     pub salt_nonce: Option<String>,
 }
 
@@ -157,7 +163,7 @@ pub struct DeploymentInput {
     #[serde(rename = "safeAccountConfig")]
     pub safe_account_config: AccountConfig,
     #[serde(rename = "safeDeploymentConfig")]
-    pub safe_deployment_config: DeploymentConfig,
+    pub safe_deployment_config: Option<DeploymentConfig>,
     pub connection: Option<SchemaConnection>,
 }
 
@@ -199,7 +205,7 @@ pub struct MetaTransactionOptions {
 pub struct RelayTransactionArgs {
     pub transaction: MetaTransactionData,
     pub options: MetaTransactionOptions,
-    pub config: DeploymentConfig,
+    pub config: Option<SponsorDeploymentConfig>,
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize)]

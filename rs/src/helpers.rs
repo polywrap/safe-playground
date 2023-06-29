@@ -1,20 +1,5 @@
 use std::{collections::HashMap, convert::TryFrom, env, sync::Arc};
 
-use super::dependencies::{
-    account_abstraction::{
-        core::wasm_wrapper as account_abstraction_core_wrapper,
-        relay::wasm_wrapper as account_abstraction_relay_wrapper,
-    },
-    ethers::{
-        core::wasm_wrapper as ethers_core_wrapper, utils::wasm_wrapper as ethers_utils_wrapper,
-    },
-    gelato_relayer::wasm_wrapper as gelato_relayer_wrapper,
-    safe::{
-        core::wasm_wrapper as safe_contracts_wrapper,
-        factory::wasm_wrapper as safe_factory_wrapper,
-        manager::wasm_wrapper as safe_manager_wrapper,
-    },
-};
 use crate::{
     constants::{
         ACCOUNT_ABSTRACTION_WRAPPER_URI, ETHERS_CORE_WRAPPER_URI, ETHERS_UTILS_WRAPPER_URI,
@@ -31,7 +16,7 @@ use polywrap_client::{
     msgpack::to_vec,
     plugin::package::PluginPackage,
 };
-use polywrap_client_default_config::{SystemClientConfig, Web3ClientConfig};
+use polywrap_client_default_config::SystemClientConfig;
 use polywrap_datetime_plugin::DatetimePlugin;
 use polywrap_ethereum_wallet_plugin::{
     connection::Connection, connections::Connections, EthereumWalletPlugin,
@@ -45,7 +30,11 @@ pub fn get_client(private_key: Option<String>) -> PolywrapClient {
     dotenv::from_path("../.env").ok();
     let mut config = PolywrapClientConfig::new();
     config.add(SystemClientConfig::default().into());
-    // .add(Web3ClientConfig::default().into());
+
+    let schema_connection = SchemaConnection {
+        network_name_or_chain_id: Some(NETWORK.clone()),
+        node: None,
+    };
 
     let signer = if let Some(s) = private_key {
         s
@@ -82,40 +71,6 @@ pub fn get_client(private_key: Option<String>) -> PolywrapClient {
         ),
     ]);
 
-    config.add_wrappers(vec![
-        (
-            ETHERS_CORE_WRAPPER_URI.clone(),
-            Arc::new(ethers_core_wrapper()),
-        ),
-        (
-            ETHERS_UTILS_WRAPPER_URI.clone(),
-            Arc::new(ethers_utils_wrapper()),
-        ),
-        (
-            ACCOUNT_ABSTRACTION_WRAPPER_URI.clone(),
-            Arc::new(account_abstraction_core_wrapper()),
-        ),
-        (
-            RELAYER_ADAPTER_WRAPPER_URI.clone(),
-            Arc::new(account_abstraction_relay_wrapper()),
-        ),
-        (
-            SAFE_CONTRACTS_URI.clone(),
-            Arc::new(safe_contracts_wrapper()),
-        ),
-        (SAFE_FACTORY_URI.clone(), Arc::new(safe_factory_wrapper())),
-        (SAFE_MANAGER_URI.clone(), Arc::new(safe_manager_wrapper())),
-        (
-            GELATO_RELAYER_WRAPPER_URI.clone(),
-            Arc::new(gelato_relayer_wrapper()),
-        ),
-    ]);
-
-    let schema_connection = SchemaConnection {
-        network_name_or_chain_id: Some(NETWORK.clone()),
-        node: None,
-    };
-
     config.add_envs(HashMap::from([
         (
             SAFE_MANAGER_URI.clone(),
@@ -138,6 +93,45 @@ pub fn get_client(private_key: Option<String>) -> PolywrapClient {
                 connection: schema_connection,
             })
             .unwrap(),
+        ),
+    ]));
+
+    config.add_redirects(HashMap::from([
+        (
+            Uri::try_from("wrap://ens/datetime.polywrap.eth").unwrap(),
+            Uri::try_from("wrap://plugin/datetime").unwrap(),
+        ),
+        (
+            GELATO_RELAYER_WRAPPER_URI.clone(),
+            Uri::try_from("fs/../wrap-dependencies/gelato-relayer").unwrap(),
+        ),
+        (
+            SAFE_MANAGER_URI.clone(),
+            Uri::try_from("fs/../wrap-dependencies/safe/manager").unwrap(),
+        ),
+        (
+            SAFE_CONTRACTS_URI.clone(),
+            Uri::try_from("fs/../wrap-dependencies/safe/core").unwrap(),
+        ),
+        (
+            SAFE_FACTORY_URI.clone(),
+            Uri::try_from("fs/../wrap-dependencies/safe/factory").unwrap(),
+        ),
+        (
+            ETHERS_CORE_WRAPPER_URI.clone(),
+            Uri::try_from("fs/../wrap-dependencies/ethers/core").unwrap(),
+        ),
+        (
+            ETHERS_UTILS_WRAPPER_URI.clone(),
+            Uri::try_from("fs/../wrap-dependencies/ethers/utils").unwrap(),
+        ),
+        (
+            ACCOUNT_ABSTRACTION_WRAPPER_URI.clone(),
+            Uri::try_from("fs/../wrap-dependencies/account-abstraction/core").unwrap(),
+        ),
+        (
+            RELAYER_ADAPTER_WRAPPER_URI.clone(),
+            Uri::try_from("fs/../wrap-dependencies/account-abstraction/relay").unwrap(),
         ),
     ]));
 

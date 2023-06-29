@@ -5,7 +5,7 @@ extern crate serde;
 use polywrap_client::msgpack::to_vec;
 use safe_rust_playground::{
     constants::ETHERS_CORE_WRAPPER_URI, helpers::get_client, AccountConfig, DeploymentArgs,
-    DeploymentConfig, DeploymentInput, SchemaConnection, SAFE_FACTORY_URI,
+    DeploymentConfig, DeploymentInput, SchemaConnection, NETWORK, SAFE_FACTORY_URI,
 };
 use serde::Serialize;
 
@@ -24,7 +24,7 @@ fn main() {
             Some(
                 &to_vec(&GetSignerAddressArgs {
                     connection: Some(SchemaConnection {
-                        network_name_or_chain_id: Some("goerli".to_string()),
+                        network_name_or_chain_id: Some(NETWORK.clone()),
                         node: None,
                     }),
                 })
@@ -46,10 +46,13 @@ fn main() {
                 owners: vec![signer_address.unwrap()],
                 threshold: 1,
             },
-            safe_deployment_config: DeploymentConfig {
-                salt_nonce: Some("0x8884446577".to_string()),
-            },
-            connection: None,
+            safe_deployment_config: Some(DeploymentConfig {
+                salt_nonce: "0x94".to_string(),
+            }),
+            connection: Some(SchemaConnection {
+                network_name_or_chain_id: Some(NETWORK.clone()),
+                node: None,
+            }),
         },
     };
 

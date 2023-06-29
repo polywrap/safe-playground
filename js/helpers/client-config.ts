@@ -13,11 +13,15 @@ import { Wallet } from "ethers";
 import {
   ACCOUNT_ABSTRACTION_WRAPPER_URI,
   CONNECTION,
+  ETHERS_CORE_WRAPPER_URI,
+  ETHERS_UTILS_WRAPPER_URI,
   GELATO_RELAYER_WRAPPER_URI,
   NETWORK,
   OWNER_ONE_PRIVATE_KEY,
   RELAYER_ADAPTER_WRAPPER_URI,
   SAFE_ADDRESS,
+  SAFE_CONTRACTS_URI,
+  SAFE_FACTORY_URI,
   SAFE_MANAGER_URI,
 } from "./constants";
 
@@ -56,6 +60,12 @@ export const getClient = (privateKey = OWNER_ONE_PRIVATE_KEY) => {
     .addRedirects({
       [ACCOUNT_ABSTRACTION_WRAPPER_URI.uri]: `fs/${__dirname}/../../wrap-dependencies/account-abstraction/core`,
       [RELAYER_ADAPTER_WRAPPER_URI.uri]: `fs/${__dirname}/../../wrap-dependencies/account-abstraction/relay`,
+      [GELATO_RELAYER_WRAPPER_URI.uri]: `fs/${__dirname}/../../wrap-dependencies/gelato-relayer`,
+      [SAFE_MANAGER_URI.uri]: `fs/${__dirname}/../../wrap-dependencies/safe/manager`,
+      [SAFE_FACTORY_URI.uri]: `fs/${__dirname}/../../wrap-dependencies/safe/factory`,
+      [SAFE_CONTRACTS_URI.uri]: `fs/${__dirname}/../../wrap-dependencies/safe/core`,
+      [ETHERS_CORE_WRAPPER_URI.uri]: `fs/${__dirname}/../../wrap-dependencies/ethers/core`,
+      [ETHERS_UTILS_WRAPPER_URI.uri]: `fs/${__dirname}/../../wrap-dependencies/ethers/utils`,
       [GELATO_RELAYER_WRAPPER_URI.uri]: `fs/${__dirname}/../../wrap-dependencies/gelato-relayer`,
     });
 
